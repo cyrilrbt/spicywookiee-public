@@ -1,24 +1,11 @@
 import re
-import os.path
+import os, os.path
 from spicywookiee.reader import Reader
 from spicywookiee.downloader import Downloader
 from spicywookiee.history import History
 
 
 FEEDS = (
-    "http://ezrss.it/feed/",
-    "http://eztv.ptain.info/cgi-bin/eztv.pl?id=",
-    "http://showrss.karmorra.info/feeds/all.rss",
-
-    # Show specific searches
-    #"http://kat.ph/usearch/betas/?rss=1",
-
-    # Unsafe source
-    #"http://kat.ph/tv/?rss=1",
-
-    #BT-Chat are ASSHOLES but they work
-    "http://www.bt-chat.com/rss.php?mode=cg&group=3&cat=9",
-    "http://www.bt-chat.com/rss.php?mode=cg&group=2&cat=9",
 )
 BASE_PATH = os.path.join(os.path.dirname(__file__), '..')
 
@@ -51,8 +38,11 @@ def fetch():
             for f in found:
                 filename = 'show-%s-%s-%s.torrent' % (name, f[2], f[3])
                 print h.title(name), filename, f[1]
-                d = Downloader(f[1])
-                d.download(os.path.join(BASE_PATH, filename))
-                h.set(name, f[2], f[3])
+                if f[1].startswith('magnet'):
+                    os.system("open \"%s\"" % f[1])
+                else:
+                    d = Downloader(f[1])
+                    d.download(os.path.join(BASE_PATH, filename))
+                    h.set(name, f[2], f[3])
 
     h.save()
